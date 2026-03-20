@@ -12,7 +12,7 @@ public class RoundDefinitionsTests
         Assert.Equal(15, round.Customers.Count);
         Assert.Single(round.Vehicles);
         Assert.Equal(int.MaxValue, round.Vehicles[0].Capacity);
-        Assert.Equal(90, round.TimerSeconds);
+        Assert.Equal(60, round.TimerSeconds);
     }
 
     [Fact]

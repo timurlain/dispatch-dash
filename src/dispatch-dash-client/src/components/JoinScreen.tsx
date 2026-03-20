@@ -1,8 +1,7 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import type { ScoreResult, LeaderboardEntry, FeasibilityResult, RouteSubmission } from '../types';
-import { rounds } from '../data/rounds';
-import { calculateRouteDistance } from '../lib/scoring';
+import type { RouteSubmission, ScoreResult } from '../types';
+import { useSignalR } from '../hooks/useSignalR';
 import WaitingRoom from './WaitingRoom';
 import Countdown from './Countdown';
 import PlayScreen from './PlayScreen';
@@ -11,100 +10,70 @@ import GameOver from './GameOver';
 
 type Phase = 'join' | 'waiting' | 'countdown' | 'playing' | 'result' | 'gameOver';
 
-/** Score a submission locally (single-player demo until SignalR is wired) */
-function scoreLocally(
-  roundNumber: number,
-  submission: RouteSubmission[],
-): ScoreResult {
-  const round = rounds[roundNumber];
-  const customerMap = new Map(round.customers.map(c => [c.id, c]));
-  const allVisited = new Set(submission.flatMap(r => r.customerIds));
-
-  let rawDistanceKm = 0;
-  let capacityPenalty = 0;
-  let timeWindowPenalty = 0;
-
-  for (const route of submission) {
-    const stops = route.customerIds.map(id => customerMap.get(id)!).filter(Boolean);
-    rawDistanceKm += calculateRouteDistance(round.depot, stops);
-
-    const vehicle = round.vehicles.find(v => v.id === route.vehicleId);
-    if (vehicle && vehicle.capacity !== Infinity) {
-      const load = stops.reduce((s, c) => s + c.demand, 0);
-      if (load > vehicle.capacity) {
-        capacityPenalty += (load - vehicle.capacity) * 50;
-      }
-    }
-
-    for (const stop of stops) {
-      if (stop.timeWindow !== 'none') {
-        // Simplified: no actual time tracking, just add minor penalty for wrong ordering
-        timeWindowPenalty += 0;
-      }
-    }
-  }
-
-  const unvisitedCount = round.customers.length - allVisited.size;
-  const unvisitedPenalty = unvisitedCount * 100;
-
-  const distanceScore = Math.round(rawDistanceKm);
-  const penaltyScore = capacityPenalty + timeWindowPenalty + unvisitedPenalty;
-  const totalScore = Math.max(0, 1000 - distanceScore - penaltyScore);
-
-  return {
-    distanceScore,
-    penaltyScore,
-    totalScore,
-    rawDistanceKm,
-    capacityPenalty,
-    timeWindowPenalty,
-    unvisitedPenalty,
-  };
-}
-
 export default function JoinScreen() {
   const { code: urlCode } = useParams<{ code?: string }>();
+  const signalR = useSignalR();
 
   const [phase, setPhase] = useState<Phase>('join');
   const [roomCode, setRoomCode] = useState(urlCode?.toUpperCase() ?? '');
-  const [playerName, setPlayerName] = useState('');
+  const [name, setName] = useState('');
   const [players, setPlayers] = useState<string[]>([]);
-  const [currentRound, setCurrentRound] = useState(1);
-  const [timerSeconds, setTimerSeconds] = useState<number | null>(null);
+  const [currentRound, setCurrentRound] = useState(0);
   const [lastScore, setLastScore] = useState<ScoreResult | null>(null);
-  const [roundScores, setRoundScores] = useState<ScoreResult[]>([]);
-  const [feasibility, setFeasibility] = useState<FeasibilityResult | undefined>();
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [lastRank, setLastRank] = useState(1);
 
-  const round = rounds[currentRound];
-
-  // Timer countdown
+  // Track player names as they join
   useEffect(() => {
-    if (phase === 'playing' && round) {
-      setTimerSeconds(round.timerSeconds);
-      timerRef.current = setInterval(() => {
-        setTimerSeconds(prev => {
-          if (prev === null || prev <= 1) {
-            if (timerRef.current) clearInterval(timerRef.current);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-      return () => {
-        if (timerRef.current) clearInterval(timerRef.current);
-      };
+    if (signalR.playerCount > 0 && signalR.playerName) {
+      // We don't get all names from SignalR, just count — use name + count
+      const names = [signalR.playerName];
+      for (let i = 1; i < signalR.playerCount; i++) {
+        names.push(`Hráč ${i + 1}`);
+      }
+      setPlayers(names);
     }
-  }, [phase, round]);
+  }, [signalR.playerCount, signalR.playerName]);
+
+  // RoundStarting → transition to countdown
+  useEffect(() => {
+    if (signalR.round && phase !== 'playing' && phase !== 'gameOver') {
+      setCurrentRound(signalR.round.roundNumber);
+      setPhase('countdown');
+    }
+  }, [signalR.round]);
+
+  // RoundEnded → transition to result
+  useEffect(() => {
+    if (signalR.results && signalR.playerId) {
+      const myResult = signalR.results.find(r => r.playerId === signalR.playerId);
+      if (myResult) {
+        setLastScore({
+          distanceScore: 0,
+          penaltyScore: 0,
+          totalScore: myResult.score ?? 0,
+          rawDistanceKm: 0,
+          capacityPenalty: 0,
+          timeWindowPenalty: 0,
+          unvisitedPenalty: 0,
+        });
+        setLastRank(myResult.rank ?? 1);
+        setPhase('result');
+      }
+    }
+  }, [signalR.results, signalR.playerId]);
+
+  // GameOver → transition to game over
+  useEffect(() => {
+    if (signalR.gameOver) {
+      setPhase('gameOver');
+    }
+  }, [signalR.gameOver]);
 
   const handleJoin = useCallback(() => {
-    if (!roomCode.trim() || !playerName.trim()) return;
-    // In demo mode, simulate joining: add self + a few AI players
-    setPlayers([playerName, 'Demo Player 2', 'Demo Player 3']);
+    if (!roomCode.trim() || !name.trim()) return;
+    signalR.joinGame(roomCode, name);
     setPhase('waiting');
-    // Auto-start after a short wait (demo mode)
-    setTimeout(() => setPhase('countdown'), 2000);
-  }, [roomCode, playerName]);
+  }, [roomCode, name, signalR]);
 
   const handleCountdownComplete = useCallback(() => {
     setPhase('playing');
@@ -112,42 +81,23 @@ export default function JoinScreen() {
 
   const handleSubmit = useCallback(
     (submission: RouteSubmission[]) => {
-      if (timerRef.current) clearInterval(timerRef.current);
-      const score = scoreLocally(currentRound, submission);
-      setLastScore(score);
-      setRoundScores(prev => [...prev, score]);
-      setPhase('result');
+      if (signalR.playerId) {
+        signalR.submitSolution(roomCode, signalR.playerId, submission);
+      }
+      // Stay in playing state — server will send RoundEnded when all submit or timer expires
     },
-    [currentRound],
+    [roomCode, signalR],
   );
 
   const handleNextRound = useCallback(() => {
-    const nextRound = currentRound + 1;
-    if (nextRound > 3) {
-      setFeasibility({
-        isFeasible: false,
-        totalDemand: 34,
-        totalCapacity: 23,
-        capacityShortfall: 11,
-        theoreticalMinPenalty: 550,
-        explanation:
-          'Round 3 is intentionally infeasible! Total demand (34 units) exceeds total vehicle capacity (23 units). ' +
-          'The best strategy is to skip the least valuable deliveries and minimize penalties. ' +
-          'This mirrors real-world VRP where not all orders can always be fulfilled.',
-      });
-      setPhase('gameOver');
-    } else {
-      setCurrentRound(nextRound);
-      setPhase('countdown');
-    }
-  }, [currentRound]);
+    // Wait for host to start next round — go back to waiting
+    setPhase('waiting');
+  }, []);
 
   const handlePlayAgain = useCallback(() => {
     setPhase('join');
-    setCurrentRound(1);
-    setRoundScores([]);
+    setCurrentRound(0);
     setLastScore(null);
-    setTimerSeconds(null);
   }, []);
 
   const handleCodeChange = (value: string) => {
@@ -157,15 +107,21 @@ export default function JoinScreen() {
   // --- Render phases ---
 
   if (phase === 'waiting') {
-    return <WaitingRoom roomCode={roomCode} playerName={playerName} players={players} />;
+    return <WaitingRoom roomCode={roomCode} playerName={name} players={players} />;
   }
 
   if (phase === 'countdown') {
     return <Countdown onComplete={handleCountdownComplete} />;
   }
 
-  if (phase === 'playing' && round) {
-    return <PlayScreen round={round} timerSeconds={timerSeconds} onSubmit={handleSubmit} />;
+  if (phase === 'playing' && signalR.round) {
+    return (
+      <PlayScreen
+        round={signalR.round}
+        timerSeconds={signalR.timer}
+        onSubmit={handleSubmit}
+      />
+    );
   }
 
   if (phase === 'result' && lastScore) {
@@ -173,27 +129,19 @@ export default function JoinScreen() {
       <RoundResult
         roundNumber={currentRound}
         score={lastScore}
-        rank={1}
-        totalPlayers={players.length}
-        onContinue={handleNextRound}
+        rank={lastRank}
+        totalPlayers={signalR.playerCount || players.length}
+        onContinue={currentRound < 3 ? handleNextRound : undefined}
       />
     );
   }
 
   if (phase === 'gameOver') {
-    const allScores = [...roundScores];
-    const totalScore = allScores.reduce((s, r) => s + r.totalScore, 0);
-    const leaderboard: LeaderboardEntry[] = [
-      { playerId: '1', playerName, totalScore, rank: 1 },
-      { playerId: '2', playerName: 'Demo Player 2', totalScore: Math.round(totalScore * 0.85), rank: 2 },
-      { playerId: '3', playerName: 'Demo Player 3', totalScore: Math.round(totalScore * 0.72), rank: 3 },
-    ];
-
     return (
       <GameOver
-        leaderboard={leaderboard}
-        playerName={playerName}
-        feasibility={feasibility}
+        leaderboard={signalR.leaderboard}
+        playerName={name}
+        feasibility={signalR.feasibility ?? undefined}
         onPlayAgain={handlePlayAgain}
       />
     );
@@ -228,8 +176,8 @@ export default function JoinScreen() {
           </label>
           <input
             type="text"
-            value={playerName}
-            onChange={e => setPlayerName(e.target.value)}
+            value={name}
+            onChange={e => setName(e.target.value)}
             placeholder="Jméno dispečera"
             maxLength={20}
             className="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-3 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-orange-500 transition-colors"
@@ -238,10 +186,10 @@ export default function JoinScreen() {
 
         <button
           onClick={handleJoin}
-          disabled={roomCode.length < 4 || !playerName.trim()}
+          disabled={roomCode.length < 4 || !name.trim() || !signalR.connected}
           className="bg-orange-500 hover:bg-orange-600 disabled:bg-slate-700 disabled:text-slate-500 text-white font-bold py-4 px-8 rounded-xl text-xl transition-colors"
         >
-          PŘIPOJIT
+          {signalR.connected ? 'PŘIPOJIT' : 'PŘIPOJOVÁNÍ...'}
         </button>
       </div>
     </div>
