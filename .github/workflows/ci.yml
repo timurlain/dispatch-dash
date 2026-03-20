@@ -1,0 +1,68 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Backend - Restore & Build
+        run: dotnet build --warnaserror
+
+      - name: Backend - Test
+        run: dotnet test -v minimal
+
+      - name: Frontend - Install & Build
+        working-directory: src/dispatch-dash-client
+        run: |
+          npm ci
+          npm run build
+
+      - name: Frontend - Test
+        working-directory: src/dispatch-dash-client
+        run: npx vitest run
+
+  deploy:
+    needs: build-and-test
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login to ACR
+        uses: azure/docker-login@v2
+        with:
+          login-server: ${{ secrets.ACR_LOGIN_SERVER }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      - name: Build & Push Docker image
+        run: |
+          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/dispatch-dash:${{ github.sha }} .
+          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/dispatch-dash:latest .
+          docker push ${{ secrets.ACR_LOGIN_SERVER }}/dispatch-dash:${{ github.sha }}
+          docker push ${{ secrets.ACR_LOGIN_SERVER }}/dispatch-dash:latest
+
+      - name: Deploy to Azure Container Apps
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          acrName: ${{ secrets.ACR_NAME }}
+          containerAppName: dispatch-dash
+          resourceGroup: ${{ secrets.AZURE_RESOURCE_GROUP }}
+          imageToDeploy: ${{ secrets.ACR_LOGIN_SERVER }}/dispatch-dash:${{ github.sha }}
