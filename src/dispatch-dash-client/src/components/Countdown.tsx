@@ -4,7 +4,7 @@ interface Props {
   onComplete: () => void;
 }
 
-const STEPS = ['3', '2', '1', 'DISPATCH!'];
+const STEPS = ['3', '2', '1', 'JEDEM!'];
 const STEP_MS = 900;
 
 export default function Countdown({ onComplete }: Props) {

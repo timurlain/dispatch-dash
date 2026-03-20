@@ -21,8 +21,8 @@ const rushOrder: Customer = {
 export const rounds: Record<number, RoundConfig> = {
   1: {
     roundNumber: 1,
-    title: 'The Easy Life',
-    description: 'One truck, no limits. Just find the shortest route.',
+    title: 'Pohodička',
+    description: 'Jeden kamion, žádná omezení. Najdi nejkratší trasu.',
     customers: baseCustomers.map(c => ({ ...c, timeWindow: 'none' as const, demand: 0 })),
     vehicles: [{ id: 'V1', capacity: Infinity, preloadedUnits: 0 }],
     depot,
@@ -31,8 +31,8 @@ export const rounds: Record<number, RoundConfig> = {
   },
   2: {
     roundNumber: 2,
-    title: 'Welcome to Reality',
-    description: '4 trucks, limited capacity, time windows.',
+    title: 'Vítejte v realitě',
+    description: '4 kamiony, omezená kapacita, časová okna.',
     customers: [...baseCustomers],
     vehicles: Array.from({ length: 4 }, (_, i): Vehicle => ({
       id: `V${i + 1}`, capacity: 20, preloadedUnits: 0,
@@ -43,8 +43,8 @@ export const rounds: Record<number, RoundConfig> = {
   },
   3: {
     roundNumber: 3,
-    title: 'A Typical Monday',
-    description: 'Rush orders, breakdowns, traffic. Can you serve everyone?',
+    title: 'Typické pondělí',
+    description: 'Urgentní objednávky, poruchy, zácpy. Zvládneš obsloužit všechny?',
     customers: [...baseCustomers, rushOrder],
     vehicles: [
       { id: 'V1', capacity: 8, preloadedUnits: 0 },

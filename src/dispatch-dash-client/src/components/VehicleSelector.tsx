@@ -28,7 +28,7 @@ export default function VehicleSelector({ vehicles, activeVehicleId, getLoad, on
             }`}
             style={{ borderColor: VEHICLE_COLORS[i % VEHICLE_COLORS.length] }}
           >
-            <div className="text-xs text-slate-400">Truck {i + 1}</div>
+            <div className="text-xs text-slate-400">Kamion {i + 1}</div>
             <div className="h-1.5 bg-slate-700 rounded-full mt-1">
               <div
                 className={`h-full rounded-full transition-all ${overloaded ? 'bg-red-500' : 'bg-green-500'}`}

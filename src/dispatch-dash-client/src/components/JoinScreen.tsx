@@ -203,14 +203,14 @@ export default function JoinScreen() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center gap-6 p-4">
       <div className="text-center">
-        <h2 className="text-3xl md:text-4xl font-bold text-orange-500">JOIN GAME</h2>
-        <p className="text-slate-500 mt-1 text-sm">Enter the room code from your host</p>
+        <h2 className="text-3xl md:text-4xl font-bold text-orange-500">PŘIPOJIT SE</h2>
+        <p className="text-slate-500 mt-1 text-sm">Zadej kód místnosti od hostitele</p>
       </div>
 
       <div className="flex flex-col gap-4 w-full max-w-xs">
         <div>
           <label className="block text-slate-400 text-xs uppercase tracking-wider mb-1">
-            Room Code
+            Kód místnosti
           </label>
           <input
             type="text"
@@ -224,13 +224,13 @@ export default function JoinScreen() {
 
         <div>
           <label className="block text-slate-400 text-xs uppercase tracking-wider mb-1">
-            Your Name
+            Tvoje jméno
           </label>
           <input
             type="text"
             value={playerName}
             onChange={e => setPlayerName(e.target.value)}
-            placeholder="Dispatcher name"
+            placeholder="Jméno dispečera"
             maxLength={20}
             className="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-3 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-orange-500 transition-colors"
           />
@@ -241,7 +241,7 @@ export default function JoinScreen() {
           disabled={roomCode.length < 4 || !playerName.trim()}
           className="bg-orange-500 hover:bg-orange-600 disabled:bg-slate-700 disabled:text-slate-500 text-white font-bold py-4 px-8 rounded-xl text-xl transition-colors"
         >
-          JOIN
+          PŘIPOJIT
         </button>
       </div>
     </div>

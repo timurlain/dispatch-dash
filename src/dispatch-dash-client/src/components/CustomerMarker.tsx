@@ -40,8 +40,8 @@ export default function CustomerMarker({ customer, isSelected, orderIndex, onCli
       <Popup>
         <div className="font-mono text-sm">
           <strong>{customer.id}: {customer.name}</strong>
-          {customer.demand > 0 && <div>Demand: {customer.demand} units</div>}
-          {customer.timeWindow !== 'none' && <div>TW: {customer.timeWindow}</div>}
+          {customer.demand > 0 && <div>Poptávka: {customer.demand} jednotek</div>}
+          {customer.timeWindow !== 'none' && <div>ČO: {customer.timeWindow}</div>}
         </div>
       </Popup>
     </Marker>

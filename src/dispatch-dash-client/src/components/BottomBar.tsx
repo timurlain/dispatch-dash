@@ -29,7 +29,7 @@ export default function BottomBar({
       <div className="flex items-center justify-between">
         <div className="flex gap-4 text-sm text-slate-400">
           <span>{'\uD83D\uDCCD'} {totalVisited}/{round.customers.length}</span>
-          <span>{'\uD83D\uDCCF'} {distance} pts</span>
+          <span>{'\uD83D\uDCCF'} {distance} b.</span>
         </div>
         {timerSeconds !== null && (
           <span className={`text-sm font-bold ${timerSeconds <= 15 ? 'text-red-400 animate-pulse' : 'text-slate-400'}`}>
@@ -40,7 +40,7 @@ export default function BottomBar({
           onClick={onSubmit}
           className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-6 rounded-lg transition-colors"
         >
-          SUBMIT
+          ODESLAT
         </button>
       </div>
     </div>

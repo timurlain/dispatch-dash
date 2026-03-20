@@ -29,7 +29,7 @@ export default function PlayScreen({ round, timerSeconds, onSubmit }: Props) {
     <div className="h-screen flex flex-col">
       <div className="bg-slate-800 border-b border-slate-700 px-4 py-2 flex items-center justify-between">
         <div>
-          <span className="text-orange-500 font-bold text-sm">Round {round.roundNumber}</span>
+          <span className="text-orange-500 font-bold text-sm">Kolo {round.roundNumber}</span>
           <span className="text-slate-500 mx-2">|</span>
           <span className="text-slate-300 text-sm">{round.title}</span>
         </div>

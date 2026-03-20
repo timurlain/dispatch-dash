@@ -8,20 +8,20 @@ export default function IntroScreen() {
         <h1 className="text-5xl md:text-7xl font-bold text-orange-500 tracking-tight">
           DISPATCH DASH
         </h1>
-        <p className="text-slate-400 mt-2 text-lg">VRP Classroom Challenge</p>
+        <p className="text-slate-400 mt-2 text-lg">Výzva pro dispečery</p>
       </div>
       <div className="flex flex-col gap-4 w-full max-w-xs">
         <button
           onClick={() => navigate('/host')}
           className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-8 rounded-xl text-xl transition-colors"
         >
-          HOST GAME
+          VYTVOŘIT HRU
         </button>
         <button
           onClick={() => navigate('/join')}
           className="bg-slate-700 hover:bg-slate-600 text-slate-200 font-bold py-4 px-8 rounded-xl text-xl transition-colors border border-slate-600"
         >
-          JOIN GAME
+          PŘIPOJIT SE
         </button>
       </div>
     </div>

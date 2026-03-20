@@ -5,20 +5,20 @@ import InfeasibilityReveal from './InfeasibilityReveal';
 
 const WHAT_CHANGED: Record<number, { title: string; bullets: string[] }> = {
   2: {
-    title: 'ROUND 2 — Welcome to Reality',
+    title: 'KOLO 2 — Vítejte v realitě',
     bullets: [
-      '4 trucks with capacity limits (20 units each)',
-      'Time windows: some customers need morning or afternoon delivery',
-      'You must split customers across vehicles wisely',
+      '4 kamiony s omezenou kapacitou (20 jednotek každý)',
+      'Časová okna: někteří zákazníci vyžadují ranní nebo odpolední doručení',
+      'Musíš chytře rozdělit zákazníky mezi vozidla',
     ],
   },
   3: {
-    title: 'ROUND 3 — A Typical Monday',
+    title: 'KOLO 3 — Typické pondělí',
     bullets: [
-      'Rush order incoming! A new customer appeared in Frenstat',
-      'Traffic jam on the Zlin-Otrokovice corridor (2x travel cost)',
-      'Reduced fleet capacity — trucks carry less',
-      'Can you serve everyone? ...or is that even possible?',
+      'Urgentní objednávka! Nový zákazník se objevil ve Frenštátě',
+      'Zácpa na trase Zlín–Otrokovice (2× náklady na cestu)',
+      'Snížená kapacita vozového parku — kamiony uvezou méně',
+      'Zvládneš obsloužit všechny? ...nebo je to vůbec možné?',
     ],
   },
 };
@@ -93,7 +93,7 @@ export default function HostScreen() {
         {error ? (
           <p className="text-red-400 text-xl">{error}</p>
         ) : (
-          <p className="text-slate-500 text-xl animate-pulse">Creating game...</p>
+          <p className="text-slate-500 text-xl animate-pulse">Vytvářím hru...</p>
         )}
       </div>
     );
@@ -106,17 +106,17 @@ export default function HostScreen() {
         {/* Top bar */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <span className="text-slate-500 text-sm uppercase tracking-widest">Room</span>
+            <span className="text-slate-500 text-sm uppercase tracking-widest">Místnost</span>
             <span className="text-orange-500 font-bold text-2xl ml-3 tracking-[0.2em]">{roomCode}</span>
           </div>
-          <h1 className="text-4xl font-bold text-orange-500">GAME OVER</h1>
-          <div className="text-slate-500 text-sm">{playerCount} players</div>
+          <h1 className="text-4xl font-bold text-orange-500">KONEC HRY</h1>
+          <div className="text-slate-500 text-sm">{playerCount} hráčů</div>
         </div>
 
         <div className="flex-1 grid grid-cols-2 gap-6 max-w-7xl mx-auto w-full">
           {/* Left: Final leaderboard */}
           <div className="bg-slate-800/50 rounded-xl p-6">
-            <Leaderboard entries={leaderboard} title="FINAL STANDINGS" />
+            <Leaderboard entries={leaderboard} title="KONEČNÉ POŘADÍ" />
           </div>
 
           {/* Right: Infeasibility reveal */}
@@ -125,8 +125,8 @@ export default function HostScreen() {
               <InfeasibilityReveal feasibility={feasibility} />
             ) : (
               <div className="bg-slate-800/50 rounded-xl p-6 text-center">
-                <h2 className="text-3xl font-bold text-green-400 mb-4">ALL ROUNDS FEASIBLE</h2>
-                <p className="text-slate-400">Every round had a valid solution. Well played!</p>
+                <h2 className="text-3xl font-bold text-green-400 mb-4">VŠECHNA KOLA BYLA ŘEŠITELNÁ</h2>
+                <p className="text-slate-400">Každé kolo mělo platné řešení. Dobře zahráno!</p>
               </div>
             )}
           </div>
@@ -147,12 +147,12 @@ export default function HostScreen() {
         <div className="bg-slate-800 border-b border-slate-700 px-6 py-3 flex items-center justify-between">
           <div className="flex items-center gap-6">
             <div>
-              <span className="text-slate-500 text-xs uppercase tracking-widest">Room</span>
+              <span className="text-slate-500 text-xs uppercase tracking-widest">Místnost</span>
               <span className="text-orange-500 font-bold text-lg ml-2 tracking-[0.2em]">{roomCode}</span>
             </div>
             <div className="h-6 w-px bg-slate-700" />
             <div>
-              <span className="text-orange-500 font-bold text-lg">Round {round.roundNumber}</span>
+              <span className="text-orange-500 font-bold text-lg">Kolo {round.roundNumber}</span>
               <span className="text-slate-500 mx-2">|</span>
               <span className="text-slate-300">{round.title}</span>
             </div>
@@ -164,11 +164,11 @@ export default function HostScreen() {
 
           <div className="flex items-center gap-6">
             <div className="text-right">
-              <div className="text-slate-500 text-xs uppercase">Submissions</div>
+              <div className="text-slate-500 text-xs uppercase">Odevzdáno</div>
               <div className="text-cyan-400 font-bold text-lg">{submissionCount} / {playerCount}</div>
             </div>
             <div className="text-right">
-              <div className="text-slate-500 text-xs uppercase">Players</div>
+              <div className="text-slate-500 text-xs uppercase">Hráči</div>
               <div className="text-slate-300 font-bold text-lg">{playerCount}</div>
             </div>
           </div>
@@ -177,22 +177,22 @@ export default function HostScreen() {
         {/* Main area */}
         <div className="flex-1 flex items-center justify-center p-8">
           <div className="text-center space-y-6">
-            <div className="text-slate-500 uppercase tracking-widest text-sm">Round in progress</div>
+            <div className="text-slate-500 uppercase tracking-widest text-sm">Kolo probíhá</div>
             <div className="text-slate-400 text-lg max-w-xl mx-auto">{round.description}</div>
             <div className="grid grid-cols-3 gap-6 mt-8">
               <div className="bg-slate-800 rounded-xl p-6">
                 <div className="text-3xl font-bold text-slate-200">{round.customers.length}</div>
-                <div className="text-slate-500 text-sm mt-1">Customers</div>
+                <div className="text-slate-500 text-sm mt-1">Zákazníci</div>
               </div>
               <div className="bg-slate-800 rounded-xl p-6">
                 <div className="text-3xl font-bold text-slate-200">{round.vehicles.length}</div>
-                <div className="text-slate-500 text-sm mt-1">Vehicles</div>
+                <div className="text-slate-500 text-sm mt-1">Vozidla</div>
               </div>
               <div className="bg-slate-800 rounded-xl p-6">
                 <div className="text-3xl font-bold text-slate-200">
-                  {round.trafficSegments.length > 0 ? 'Yes' : 'No'}
+                  {round.trafficSegments.length > 0 ? 'Ano' : 'Ne'}
                 </div>
-                <div className="text-slate-500 text-sm mt-1">Traffic jams</div>
+                <div className="text-slate-500 text-sm mt-1">Zácpy</div>
               </div>
             </div>
           </div>
@@ -208,10 +208,10 @@ export default function HostScreen() {
         {/* Top bar */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <span className="text-slate-500 text-sm uppercase tracking-widest">Room</span>
+            <span className="text-slate-500 text-sm uppercase tracking-widest">Místnost</span>
             <span className="text-orange-500 font-bold text-2xl ml-3 tracking-[0.2em]">{roomCode}</span>
           </div>
-          <div className="text-slate-500 text-sm">{playerCount} players</div>
+          <div className="text-slate-500 text-sm">{playerCount} hráčů</div>
         </div>
 
         <div className="flex-1 grid grid-cols-2 gap-6 max-w-7xl mx-auto w-full">
@@ -219,7 +219,7 @@ export default function HostScreen() {
           <div className="bg-slate-800/50 rounded-xl p-6">
             <Leaderboard
               entries={leaderboard}
-              title={`AFTER ROUND ${lastCompletedRound}`}
+              title={`PO KOLE ${lastCompletedRound}`}
             />
           </div>
 
@@ -242,7 +242,7 @@ export default function HostScreen() {
                   onClick={handleStartRound}
                   className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-8 rounded-xl text-xl transition-colors mt-4"
                 >
-                  START ROUND {nextRound}
+                  ZAČÍT KOLO {nextRound}
                 </button>
               </div>
             ) : nextRound <= 3 ? (
@@ -251,19 +251,19 @@ export default function HostScreen() {
                   onClick={() => handleShowWhatChanged(nextRound)}
                   className="bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 font-bold py-4 px-8 rounded-xl text-lg transition-colors"
                 >
-                  WHAT CHANGED?
+                  CO SE ZMĚNILO?
                 </button>
-                <div className="text-slate-600 text-sm">or</div>
+                <div className="text-slate-600 text-sm">nebo</div>
                 <button
                   onClick={handleStartRound}
                   className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-8 rounded-xl text-xl transition-colors"
                 >
-                  START ROUND {nextRound}
+                  ZAČÍT KOLO {nextRound}
                 </button>
               </div>
             ) : (
               <div className="text-center">
-                <p className="text-slate-500 text-lg">All rounds completed!</p>
+                <p className="text-slate-500 text-lg">Všechna kola dokončena!</p>
               </div>
             )}
           </div>
@@ -284,9 +284,9 @@ export default function HostScreen() {
       <div className="flex-1 flex flex-col items-center justify-center gap-8 p-8">
         {/* Room code */}
         <div className="text-center">
-          <p className="text-slate-500 text-sm uppercase tracking-widest mb-2">Join at</p>
+          <p className="text-slate-500 text-sm uppercase tracking-widest mb-2">Připoj se na</p>
           <p className="text-slate-400 text-lg mb-4 break-all">{joinUrl}</p>
-          <p className="text-slate-500 text-sm uppercase tracking-widest mb-2">Room Code</p>
+          <p className="text-slate-500 text-sm uppercase tracking-widest mb-2">Kód místnosti</p>
           <p className="text-7xl md:text-9xl font-bold text-orange-500 tracking-[0.3em] select-all">
             {roomCode}
           </p>
@@ -296,7 +296,7 @@ export default function HostScreen() {
         <div className="bg-slate-800 rounded-xl px-8 py-4 text-center">
           <span className="text-5xl font-bold text-slate-200">{playerCount}</span>
           <span className="text-slate-500 text-xl ml-3">
-            player{playerCount !== 1 ? 's' : ''} connected
+            připojeno
           </span>
         </div>
 
@@ -310,11 +310,11 @@ export default function HostScreen() {
               : 'bg-slate-700 text-slate-500 cursor-not-allowed'
           }`}
         >
-          START ROUND 1
+          ZAČÍT KOLO 1
         </button>
 
         {playerCount === 0 && (
-          <p className="text-slate-600 text-sm">Waiting for players to join...</p>
+          <p className="text-slate-600 text-sm">Čekáme na hráče...</p>
         )}
       </div>
     </div>

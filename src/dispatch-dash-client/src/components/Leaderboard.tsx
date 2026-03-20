@@ -5,7 +5,7 @@ interface Props {
   title?: string;
 }
 
-export default function Leaderboard({ entries, title = 'LEADERBOARD' }: Props) {
+export default function Leaderboard({ entries, title = 'ŽEBŘÍČEK' }: Props) {
   const maxScore = Math.max(...entries.map(e => e.totalScore), 1);
 
   return (
@@ -25,7 +25,7 @@ export default function Leaderboard({ entries, title = 'LEADERBOARD' }: Props) {
           <div className="flex-1">
             <div className="flex justify-between text-sm mb-1">
               <span className="text-slate-200 font-semibold">{entry.playerName}</span>
-              <span className="text-slate-400">{Math.round(entry.totalScore)} pts</span>
+              <span className="text-slate-400">{Math.round(entry.totalScore)} b.</span>
             </div>
             <div className="h-2 bg-slate-700 rounded-full">
               <div
