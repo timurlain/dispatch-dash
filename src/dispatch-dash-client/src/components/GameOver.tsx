@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+import confetti from 'canvas-confetti';
 import type { LeaderboardEntry, FeasibilityResult } from '../types';
 
 interface Props {
@@ -15,11 +17,20 @@ function rankBadge(rank: number): string {
 }
 
 export default function GameOver({ leaderboard, playerName, feasibility, onPlayAgain }: Props) {
+  useEffect(() => {
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ['#FF6B35', '#00B4D8', '#22c55e'],
+    });
+  }, []);
+
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-6 p-4">
+    <div className="min-h-screen flex flex-col items-center justify-center gap-6 p-4 animate-fadeIn">
       <div className="text-center">
         <p className="text-slate-500 uppercase tracking-widest text-sm">Game Over</p>
-        <h2 className="text-4xl md:text-5xl font-bold text-orange-500 mt-2">
+        <h2 className="text-4xl md:text-5xl font-bold text-orange-500 mt-2 animate-scaleIn">
           FINAL STANDINGS
         </h2>
       </div>

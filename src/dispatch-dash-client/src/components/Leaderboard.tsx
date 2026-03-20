@@ -12,7 +12,11 @@ export default function Leaderboard({ entries, title = 'LEADERBOARD' }: Props) {
     <div className="space-y-2">
       <h2 className="text-xl font-bold text-orange-500">{title}</h2>
       {entries.map((entry, i) => (
-        <div key={entry.playerId} className="flex items-center gap-3">
+        <div
+          key={entry.playerId}
+          className="flex items-center gap-3 animate-cascadeIn"
+          style={{ animationDelay: `${i * 150}ms` }}
+        >
           <span className={`text-2xl font-bold w-8 ${
             i === 0 ? 'text-yellow-400' : i === 1 ? 'text-slate-300' : i === 2 ? 'text-amber-600' : 'text-slate-500'
           }`}>

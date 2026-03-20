@@ -22,9 +22,10 @@ export default function WaitingRoom({ roomCode, playerName, players }: Props) {
           {players.map((name, i) => (
             <li
               key={i}
-              className={`flex items-center gap-2 py-2 px-3 rounded-lg ${
+              className={`flex items-center gap-2 py-2 px-3 rounded-lg animate-slideInRight ${
                 name === playerName ? 'bg-slate-700 text-orange-400' : 'text-slate-300'
               }`}
+              style={{ animationDelay: `${i * 100}ms` }}
             >
               <span className="w-2 h-2 rounded-full bg-green-500 shrink-0" />
               {name}

@@ -6,7 +6,7 @@ interface Props {
 
 export default function InfeasibilityReveal({ feasibility }: Props) {
   return (
-    <div className="bg-red-900/30 border-2 border-red-500 rounded-xl p-6 space-y-4">
+    <div className="bg-red-900/30 border-2 border-red-500 rounded-xl p-6 space-y-4 animate-fadeIn" style={{ animationDelay: '300ms', animationFillMode: 'both' }}>
       <div className="flex items-center gap-3">
         <span className="text-4xl">&#x26A0;&#xFE0F;</span>
         <h2 className="text-2xl font-bold text-red-400">ROUND 3 WAS INFEASIBLE</h2>
