@@ -3,9 +3,14 @@ import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
 import type { HubConnection } from '@microsoft/signalr';
 import type { RoundConfig, RouteSubmission, LeaderboardEntry, FeasibilityResult } from '../types';
 
-interface RoundResult {
+export interface RoundResult {
   playerId: string;
   score?: number;
+  distanceScore?: number;
+  penaltyScore?: number;
+  capacityPenalty?: number;
+  timeWindowPenalty?: number;
+  unvisitedPenalty?: number;
   rank?: number;
 }
 
@@ -15,6 +20,7 @@ export function useSignalR() {
   const [playerId, setPlayerId] = useState<string | null>(null);
   const [playerName, setPlayerName] = useState<string | null>(null);
   const [playerCount, setPlayerCount] = useState(0);
+  const [playerNames, setPlayerNames] = useState<string[]>([]);
   const [round, setRound] = useState<RoundConfig | null>(null);
   const [countdown, setCountdown] = useState<number | null>(null);
   const [timer, setTimer] = useState<number | null>(null);
@@ -35,7 +41,10 @@ export function useSignalR() {
       setPlayerId(id);
       setPlayerName(name);
     });
-    conn.on('PlayerJoined', (_name: string, count: number) => setPlayerCount(count));
+    conn.on('PlayerJoined', (names: string[], count: number) => {
+      setPlayerNames(names);
+      setPlayerCount(count);
+    });
     conn.on('RoundStarting', (config: RoundConfig, countdownSec: number) => {
       setRound(config);
       setCountdown(countdownSec);
@@ -93,6 +102,7 @@ export function useSignalR() {
     playerId,
     playerName,
     playerCount,
+    playerNames,
     round,
     countdown,
     timer,

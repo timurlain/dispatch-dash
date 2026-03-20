@@ -9,4 +9,7 @@ public record Submission(
     double? Score = null,
     double? DistanceScore = null,
     double? PenaltyScore = null,
+    double? CapacityPenalty = null,
+    double? TimeWindowPenalty = null,
+    double? UnvisitedPenalty = null,
     int? Rank = null);

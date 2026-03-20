@@ -1,3 +1,4 @@
+import { useState, useEffect, useRef } from 'react';
 import type { RoundConfig } from '../types';
 import { useGameState } from '../hooks/useGameState';
 import GameMap from './GameMap';
@@ -22,9 +23,50 @@ export default function PlayScreen({ round, timerSeconds, onSubmit }: Props) {
     reset,
   } = useGameState(round);
 
+  const [submitted, setSubmitted] = useState(false);
+
+  // Local countdown timer — ticks every second, syncs with server ticks
+  const [localTimer, setLocalTimer] = useState<number | null>(timerSeconds);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Sync with server timer when it changes
+  useEffect(() => {
+    if (timerSeconds !== null) {
+      setLocalTimer(timerSeconds);
+    }
+  }, [timerSeconds]);
+
+  // Local countdown every second
+  useEffect(() => {
+    if (localTimer === null) return;
+
+    intervalRef.current = setInterval(() => {
+      setLocalTimer(prev => {
+        if (prev === null || prev <= 0) {
+          if (intervalRef.current) clearInterval(intervalRef.current);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [localTimer === null]); // only restart interval when timer starts/stops
+
   const handleSubmit = () => {
+    if (submitted) return;
+    setSubmitted(true);
     onSubmit(toSubmission());
   };
+
+  // Auto-submit when timer hits 0
+  useEffect(() => {
+    if (localTimer === 0 && !submitted) {
+      handleSubmit();
+    }
+  }, [localTimer, submitted]);
 
   return (
     <div className="h-screen flex flex-col">
@@ -45,20 +87,30 @@ export default function PlayScreen({ round, timerSeconds, onSubmit }: Props) {
           routes={routes}
           activeVehicleId={activeVehicleId}
           trafficSegments={round.trafficSegments}
-          onCustomerClick={toggleCustomer}
+          onCustomerClick={submitted ? () => {} : toggleCustomer}
         />
+        {submitted && (
+          <div className="absolute inset-0 flex items-center justify-center bg-slate-900/50">
+            <div className="bg-slate-800 rounded-xl p-6 text-center">
+              <p className="text-2xl font-bold text-green-400">✓ Odesláno!</p>
+              <p className="text-slate-400 mt-2">Čekáme na ostatní hráče...</p>
+            </div>
+          </div>
+        )}
       </div>
-      <BottomBar
-        round={round}
-        activeVehicleId={activeVehicleId}
-        totalVisited={totalVisited}
-        getVehicleLoad={getVehicleLoad}
-        getVehicleDistance={getVehicleDistance}
-        onSelectVehicle={setActiveVehicleId}
-        onSubmit={handleSubmit}
-        onClear={reset}
-        timerSeconds={timerSeconds}
-      />
+      {!submitted && (
+        <BottomBar
+          round={round}
+          activeVehicleId={activeVehicleId}
+          totalVisited={totalVisited}
+          getVehicleLoad={getVehicleLoad}
+          getVehicleDistance={getVehicleDistance}
+          onSelectVehicle={setActiveVehicleId}
+          onSubmit={handleSubmit}
+          onClear={reset}
+          timerSeconds={localTimer}
+        />
+      )}
     </div>
   );
 }

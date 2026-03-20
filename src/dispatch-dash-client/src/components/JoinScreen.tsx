@@ -17,22 +17,9 @@ export default function JoinScreen() {
   const [phase, setPhase] = useState<Phase>('join');
   const [roomCode, setRoomCode] = useState(urlCode?.toUpperCase() ?? '');
   const [name, setName] = useState('');
-  const [players, setPlayers] = useState<string[]>([]);
   const [currentRound, setCurrentRound] = useState(0);
   const [lastScore, setLastScore] = useState<ScoreResult | null>(null);
   const [lastRank, setLastRank] = useState(1);
-
-  // Track player names as they join
-  useEffect(() => {
-    if (signalR.playerCount > 0 && signalR.playerName) {
-      // We don't get all names from SignalR, just count — use name + count
-      const names = [signalR.playerName];
-      for (let i = 1; i < signalR.playerCount; i++) {
-        names.push(`Hráč ${i + 1}`);
-      }
-      setPlayers(names);
-    }
-  }, [signalR.playerCount, signalR.playerName]);
 
   // RoundStarting → transition to countdown
   useEffect(() => {
@@ -48,13 +35,13 @@ export default function JoinScreen() {
       const myResult = signalR.results.find(r => r.playerId === signalR.playerId);
       if (myResult) {
         setLastScore({
-          distanceScore: 0,
-          penaltyScore: 0,
+          distanceScore: myResult.distanceScore ?? 0,
+          penaltyScore: myResult.penaltyScore ?? 0,
           totalScore: myResult.score ?? 0,
           rawDistanceKm: 0,
-          capacityPenalty: 0,
-          timeWindowPenalty: 0,
-          unvisitedPenalty: 0,
+          capacityPenalty: myResult.capacityPenalty ?? 0,
+          timeWindowPenalty: myResult.timeWindowPenalty ?? 0,
+          unvisitedPenalty: myResult.unvisitedPenalty ?? 0,
         });
         setLastRank(myResult.rank ?? 1);
         setPhase('result');
@@ -81,10 +68,14 @@ export default function JoinScreen() {
 
   const handleSubmit = useCallback(
     (submission: RouteSubmission[]) => {
-      if (signalR.playerId) {
-        signalR.submitSolution(roomCode, signalR.playerId, submission);
+      if (!signalR.playerId) {
+        console.error('[DispatchDash] Cannot submit: playerId is null. SignalR state:', {
+          connected: signalR.connected,
+          playerId: signalR.playerId,
+        });
+        return;
       }
-      // Stay in playing state — server will send RoundEnded when all submit or timer expires
+      signalR.submitSolution(roomCode, signalR.playerId, submission);
     },
     [roomCode, signalR],
   );
@@ -107,7 +98,7 @@ export default function JoinScreen() {
   // --- Render phases ---
 
   if (phase === 'waiting') {
-    return <WaitingRoom roomCode={roomCode} playerName={name} players={players} />;
+    return <WaitingRoom roomCode={roomCode} playerName={name} players={signalR.playerNames} />;
   }
 
   if (phase === 'countdown') {
@@ -130,7 +121,7 @@ export default function JoinScreen() {
         roundNumber={currentRound}
         score={lastScore}
         rank={lastRank}
-        totalPlayers={signalR.playerCount || players.length}
+        totalPlayers={signalR.playerCount || signalR.playerNames.length}
         onContinue={currentRound < 3 ? handleNextRound : undefined}
       />
     );

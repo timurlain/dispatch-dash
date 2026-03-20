@@ -39,7 +39,7 @@ public class ScoringServiceTests
     }
 
     [Fact]
-    public void ScoreRoute_UnvisitedCustomers_Gets200PenaltyEach()
+    public void ScoreRoute_UnvisitedCustomers_Gets1000PenaltyEach()
     {
         var round = RoundDefinitions.Round2();
         // Visit only customer A on vehicle 1, skip the rest
@@ -47,8 +47,8 @@ public class ScoringServiceTests
 
         var result = _sut.Score(routes, round);
 
-        // 19 unvisited customers × 200 = 3800
-        Assert.Equal(3800, result.UnvisitedPenalty);
+        // 19 unvisited customers × 1000 = 19000
+        Assert.Equal(19000, result.UnvisitedPenalty);
     }
 
     [Fact]

@@ -12,7 +12,7 @@ public record FeasibilityResult(
 
 public class FeasibilityChecker
 {
-    private const int UnvisitedPenalty = 200;
+    private const int UnvisitedPenalty = 1000;
 
     public FeasibilityResult Analyze(RoundConfig round)
     {

@@ -17,7 +17,7 @@ public class ScoringService
     private const double DistanceScaleFactor = 10.0; // km → score points
     private const int CapacityPenaltyPerUnit = 50;
     private const int TimeWindowPenaltyPerViolation = 80;
-    private const int UnvisitedPenaltyPerCustomer = 200;
+    private const int UnvisitedPenaltyPerCustomer = 1000;
 
     public static double HaversineKm(double lat1, double lon1, double lat2, double lon2)
     {

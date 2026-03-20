@@ -50,18 +50,18 @@ public static class RoundDefinitions
 
     public static RoundConfig Round1() => new(
         RoundNumber: 1,
-        Title: "The Easy Life",
-        Description: "One truck, no limits. Just find the shortest route.",
+        Title: "Pohodička",
+        Description: "Jeden kamion, žádná omezení. Najdi nejkratší trasu.",
         Customers: BaseCustomers.Select(c => c with { TimeWindow = TimeWindow.None, Demand = 0 }).ToList(),
         Vehicles: [new Vehicle("V1", int.MaxValue)],
         Depot: DefaultDepot,
-        TimerSeconds: 60,
+        TimerSeconds: 30,
         TrafficSegments: []);
 
     public static RoundConfig Round2() => new(
         RoundNumber: 2,
-        Title: "Welcome to Reality",
-        Description: "4 trucks, limited capacity, time windows. Welcome to real logistics.",
+        Title: "Vítejte v realitě",
+        Description: "4 kamiony, omezená kapacita, časová okna.",
         Customers: BaseCustomers.Concat(ExtraCustomers).ToList(),
         Vehicles: [
             new Vehicle("V1", 20),
@@ -70,13 +70,13 @@ public static class RoundDefinitions
             new Vehicle("V4", 20),
         ],
         Depot: DefaultDepot,
-        TimerSeconds: 90,
+        TimerSeconds: 60,
         TrafficSegments: []);
 
     public static RoundConfig Round3() => new(
         RoundNumber: 3,
-        Title: "A Typical Monday",
-        Description: "Rush orders, breakdowns, traffic. Can you serve everyone?",
+        Title: "Typické pondělí",
+        Description: "Urgentní objednávky, poruchy, zácpy. Zvládneš obsloužit všechny?",
         Customers: BaseCustomers.Concat(ExtraCustomers).Concat(RushOrders).ToList(),
         Vehicles: [
             new Vehicle("V1", 15),
@@ -85,7 +85,7 @@ public static class RoundDefinitions
             new Vehicle("V4", 15),
         ],
         Depot: DefaultDepot,
-        TimerSeconds: 120,
+        TimerSeconds: 90,
         TrafficSegments: [new TrafficSegment("G", "H", 2.0)]);
 
     public static RoundConfig GetRound(int number) => number switch

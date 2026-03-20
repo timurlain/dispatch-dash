@@ -95,7 +95,10 @@ public class GameManager
             {
                 Score = score.TotalScore,
                 DistanceScore = score.DistanceScore,
-                PenaltyScore = score.PenaltyScore
+                PenaltyScore = score.PenaltyScore,
+                CapacityPenalty = score.CapacityPenalty,
+                TimeWindowPenalty = score.TimeWindowPenalty,
+                UnvisitedPenalty = score.UnvisitedPenalty
             };
         }
 
