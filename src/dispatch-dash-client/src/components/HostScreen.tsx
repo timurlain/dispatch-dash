@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { QRCodeSVG } from 'qrcode.react';
 import { useSignalR } from '../hooks/useSignalR';
 import Leaderboard from './Leaderboard';
 import InfeasibilityReveal from './InfeasibilityReveal';
@@ -281,15 +282,22 @@ export default function HostScreen() {
       </div>
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col items-center justify-center gap-8 p-8">
-        {/* Room code */}
-        <div className="text-center">
-          <p className="text-slate-500 text-sm uppercase tracking-widest mb-2">Připoj se na</p>
-          <p className="text-slate-400 text-lg mb-4 break-all">{joinUrl}</p>
-          <p className="text-slate-500 text-sm uppercase tracking-widest mb-2">Kód místnosti</p>
-          <p className="text-7xl md:text-9xl font-bold text-orange-500 tracking-[0.3em] select-all">
-            {roomCode}
-          </p>
+      <div className="flex-1 flex flex-col items-center justify-center gap-6 p-8">
+        <div className="flex items-center gap-12">
+          {/* QR code */}
+          <div className="bg-white rounded-2xl p-4">
+            <QRCodeSVG value={joinUrl} size={200} level="M" />
+          </div>
+
+          {/* Room code + URL */}
+          <div className="text-center">
+            <p className="text-slate-500 text-sm uppercase tracking-widest mb-1">Naskenuj nebo otevři</p>
+            <p className="text-slate-400 text-lg mb-6 break-all">{joinUrl}</p>
+            <p className="text-slate-500 text-sm uppercase tracking-widest mb-2">Kód místnosti</p>
+            <p className="text-7xl md:text-9xl font-bold text-orange-500 tracking-[0.3em] select-all">
+              {roomCode}
+            </p>
+          </div>
         </div>
 
         {/* Player count */}

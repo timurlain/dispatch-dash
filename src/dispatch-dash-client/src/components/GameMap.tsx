@@ -153,16 +153,29 @@ export default function GameMap({ customers, depot, routes, activeVehicleId, tra
             <div
               onClick={(e) => handleMarkerClick(e, c.id)}
               style={{
+                display: 'flex', flexDirection: 'column', alignItems: 'center',
+                cursor: 'pointer', position: 'relative',
+              }}
+            >
+              <div style={{
                 background: bg, border: `2px solid ${border}`, borderRadius: '50%',
                 width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center',
                 color: '#e2e8f0', fontFamily: 'monospace', fontWeight: 700, fontSize: 14,
-                position: 'relative', cursor: 'pointer',
-              }}
-            >
-              {label}
-              {(twIcon || rushIcon) && (
-                <span style={{ position: 'absolute', top: -10, right: -10, fontSize: 16 }}>
-                  {twIcon}{rushIcon}
+                position: 'relative',
+              }}>
+                {label}
+                {(twIcon || rushIcon) && (
+                  <span style={{ position: 'absolute', top: -10, right: -10, fontSize: 16 }}>
+                    {twIcon}{rushIcon}
+                  </span>
+                )}
+              </div>
+              {c.demand > 0 && (
+                <span style={{
+                  fontSize: 10, color: '#94a3b8', fontFamily: 'monospace', fontWeight: 600,
+                  marginTop: 1, background: '#0f172aCC', borderRadius: 3, padding: '0 3px',
+                }}>
+                  {c.demand}j
                 </span>
               )}
             </div>

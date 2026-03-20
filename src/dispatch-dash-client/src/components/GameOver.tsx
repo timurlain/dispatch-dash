@@ -1,13 +1,16 @@
 import { useEffect } from 'react';
 import confetti from 'canvas-confetti';
-import type { LeaderboardEntry, FeasibilityResult } from '../types';
+import type { LeaderboardEntry, FeasibilityResult, ScoreResult } from '../types';
 
 interface Props {
   leaderboard: LeaderboardEntry[];
   playerName: string;
   feasibility?: FeasibilityResult;
+  roundScores?: Record<number, ScoreResult>;
   onPlayAgain?: () => void;
 }
+
+const roundNames = ['', 'Pohodička', 'Vítejte v realitě', 'Typické pondělí'];
 
 function rankBadge(rank: number): string {
   if (rank === 1) return 'bg-yellow-500/20 border-yellow-500 text-yellow-400';
@@ -16,7 +19,7 @@ function rankBadge(rank: number): string {
   return 'bg-slate-800 border-slate-700 text-slate-400';
 }
 
-export default function GameOver({ leaderboard, playerName, feasibility, onPlayAgain }: Props) {
+export default function GameOver({ leaderboard, playerName, feasibility, roundScores, onPlayAgain }: Props) {
   useEffect(() => {
     confetti({
       particleCount: 100,
@@ -26,15 +29,18 @@ export default function GameOver({ leaderboard, playerName, feasibility, onPlayA
     });
   }, []);
 
+  const hasRoundScores = roundScores && Object.keys(roundScores).length > 0;
+
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-6 p-4 animate-fadeIn">
+    <div className="min-h-screen flex flex-col items-center justify-center gap-5 p-4 animate-fadeIn">
       <div className="text-center">
         <p className="text-slate-500 uppercase tracking-widest text-sm">Konec hry</p>
-        <h2 className="text-4xl md:text-5xl font-bold text-orange-500 mt-2 animate-scaleIn">
+        <h2 className="text-3xl md:text-4xl font-bold text-orange-500 mt-2 animate-scaleIn">
           KONEČNÉ POŘADÍ
         </h2>
       </div>
 
+      {/* Leaderboard */}
       <div className="bg-slate-800 rounded-xl p-4 w-full max-w-md space-y-2">
         {leaderboard.map((entry) => {
           const isMe = entry.playerName === playerName;
@@ -50,12 +56,58 @@ export default function GameOver({ leaderboard, playerName, feasibility, onPlayA
                 {entry.playerName}
                 {isMe && <span className="text-xs text-slate-500 ml-2">(ty)</span>}
               </span>
-              <span className="font-bold text-lg">{entry.totalScore}</span>
+              <span className="font-bold text-lg">{Math.round(entry.totalScore)}</span>
             </div>
           );
         })}
       </div>
 
+      {/* Per-round score breakdown */}
+      {hasRoundScores && (
+        <div className="bg-slate-800 rounded-xl p-4 w-full max-w-md">
+          <h3 className="text-orange-500 font-bold text-sm mb-3">TVOJE BODY PO KOLECH</h3>
+          <div className="space-y-3">
+            {[1, 2, 3].map(rn => {
+              const s = roundScores![rn];
+              if (!s) return null;
+              return (
+                <div key={rn} className="bg-slate-900/50 rounded-lg p-3">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-slate-300 font-semibold text-sm">
+                      Kolo {rn}: {roundNames[rn]}
+                    </span>
+                    <span className="text-orange-400 font-bold">{Math.round(s.totalScore)}</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
+                    <span className="text-slate-500">Vzdálenost</span>
+                    <span className="text-slate-400 text-right">{Math.round(s.distanceScore)}</span>
+                    {s.capacityPenalty > 0 && (<>
+                      <span className="text-slate-500">Kapacita</span>
+                      <span className="text-red-400 text-right">+{Math.round(s.capacityPenalty)}</span>
+                    </>)}
+                    {s.timeWindowPenalty > 0 && (<>
+                      <span className="text-slate-500">Časová okna</span>
+                      <span className="text-red-400 text-right">+{Math.round(s.timeWindowPenalty)}</span>
+                    </>)}
+                    {s.unvisitedPenalty > 0 && (<>
+                      <span className="text-slate-500">Nenavštívené</span>
+                      <span className="text-red-400 text-right">+{Math.round(s.unvisitedPenalty)}</span>
+                    </>)}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <div className="mt-3 pt-3 border-t border-slate-700 flex justify-between font-bold">
+            <span className="text-slate-300">Celkem</span>
+            <span className="text-orange-500 text-lg">
+              {Math.round(Object.values(roundScores!).reduce((sum, s) => sum + s.totalScore, 0))}
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* Feasibility reveal */}
       {feasibility && (
         <div className="bg-slate-800 rounded-xl p-5 w-full max-w-md border border-slate-700">
           <h3 className="text-orange-500 font-bold mb-2">

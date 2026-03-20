@@ -20,6 +20,7 @@ export default function JoinScreen() {
   const [currentRound, setCurrentRound] = useState(0);
   const [lastScore, setLastScore] = useState<ScoreResult | null>(null);
   const [lastRank, setLastRank] = useState(1);
+  const [roundScores, setRoundScores] = useState<Record<number, ScoreResult>>({});
 
   // RoundStarting → transition to countdown
   useEffect(() => {
@@ -34,7 +35,7 @@ export default function JoinScreen() {
     if (signalR.results && signalR.playerId) {
       const myResult = signalR.results.find(r => r.playerId === signalR.playerId);
       if (myResult) {
-        setLastScore({
+        const score: ScoreResult = {
           distanceScore: myResult.distanceScore ?? 0,
           penaltyScore: myResult.penaltyScore ?? 0,
           totalScore: myResult.score ?? 0,
@@ -42,8 +43,10 @@ export default function JoinScreen() {
           capacityPenalty: myResult.capacityPenalty ?? 0,
           timeWindowPenalty: myResult.timeWindowPenalty ?? 0,
           unvisitedPenalty: myResult.unvisitedPenalty ?? 0,
-        });
+        };
+        setLastScore(score);
         setLastRank(myResult.rank ?? 1);
+        setRoundScores(prev => ({ ...prev, [currentRound]: score }));
         setPhase('result');
       }
     }
@@ -102,7 +105,7 @@ export default function JoinScreen() {
   }
 
   if (phase === 'countdown') {
-    return <Countdown onComplete={handleCountdownComplete} />;
+    return <Countdown round={signalR.round ?? undefined} onComplete={handleCountdownComplete} />;
   }
 
   if (phase === 'playing' && signalR.round) {
@@ -133,6 +136,7 @@ export default function JoinScreen() {
         leaderboard={signalR.leaderboard}
         playerName={name}
         feasibility={signalR.feasibility ?? undefined}
+        roundScores={roundScores}
         onPlayAgain={handlePlayAgain}
       />
     );
