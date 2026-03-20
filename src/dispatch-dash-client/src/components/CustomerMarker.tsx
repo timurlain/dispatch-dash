@@ -1,5 +1,4 @@
-import { Marker, Popup } from 'react-leaflet';
-import L from 'leaflet';
+import { Marker } from 'react-map-gl/maplibre';
 import type { Customer } from '../types';
 
 interface Props {
@@ -9,7 +8,7 @@ interface Props {
   onClick: () => void;
 }
 
-function getMarkerIcon(customer: Customer, isSelected: boolean, orderIndex?: number): L.DivIcon {
+export default function CustomerMarker({ customer, isSelected, orderIndex, onClick }: Props) {
   const bg = isSelected ? '#FF6B35' : '#1e293b';
   const border = isSelected ? '#FF6B35' : '#64748b';
   const twIcon = customer.timeWindow === 'morning' ? '\u{1F305}' :
@@ -17,33 +16,41 @@ function getMarkerIcon(customer: Customer, isSelected: boolean, orderIndex?: num
   const rushIcon = customer.isRushOrder ? '\u{1F198}' : '';
   const label = orderIndex !== undefined ? `${orderIndex + 1}` : customer.id;
 
-  return L.divIcon({
-    className: '',
-    html: `<div style="
-      background:${bg}; border:2px solid ${border}; border-radius:50%;
-      width:36px; height:36px; display:flex; align-items:center; justify-content:center;
-      color:#e2e8f0; font-family:monospace; font-weight:700; font-size:14px;
-      position:relative; cursor:pointer;
-    ">${label}${twIcon || rushIcon ? `<span style="position:absolute;top:-10px;right:-10px;font-size:16px">${twIcon}${rushIcon}</span>` : ''}</div>`,
-    iconSize: [36, 36],
-    iconAnchor: [18, 18],
-  });
-}
-
-export default function CustomerMarker({ customer, isSelected, orderIndex, onClick }: Props) {
   return (
     <Marker
-      position={[customer.lat, customer.lon]}
-      icon={getMarkerIcon(customer, isSelected, orderIndex)}
-      eventHandlers={{ click: onClick }}
+      longitude={customer.lon}
+      latitude={customer.lat}
+      anchor="center"
+      onClick={(e) => {
+        e.originalEvent.stopPropagation();
+        onClick();
+      }}
     >
-      <Popup>
-        <div className="font-mono text-sm">
-          <strong>{customer.id}: {customer.name}</strong>
-          {customer.demand > 0 && <div>Poptávka: {customer.demand} jednotek</div>}
-          {customer.timeWindow !== 'none' && <div>ČO: {customer.timeWindow}</div>}
-        </div>
-      </Popup>
+      <div
+        style={{
+          background: bg,
+          border: `2px solid ${border}`,
+          borderRadius: '50%',
+          width: 36,
+          height: 36,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#e2e8f0',
+          fontFamily: 'monospace',
+          fontWeight: 700,
+          fontSize: 14,
+          position: 'relative',
+          cursor: 'pointer',
+        }}
+      >
+        {label}
+        {(twIcon || rushIcon) && (
+          <span style={{ position: 'absolute', top: -10, right: -10, fontSize: 16 }}>
+            {twIcon}{rushIcon}
+          </span>
+        )}
+      </div>
     </Marker>
   );
 }
