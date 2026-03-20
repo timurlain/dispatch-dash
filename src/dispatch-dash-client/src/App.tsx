@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import IntroScreen from './components/IntroScreen';
 import JoinScreen from './components/JoinScreen';
+import HostScreen from './components/HostScreen';
 
 export default function App() {
   return (
@@ -9,7 +10,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<IntroScreen />} />
           <Route path="/join/:code?" element={<JoinScreen />} />
-          <Route path="/host" element={<div className="flex items-center justify-center min-h-screen text-slate-500">Host screen (Task 12)</div>} />
+          <Route path="/host" element={<HostScreen />} />
         </Routes>
       </div>
     </BrowserRouter>
