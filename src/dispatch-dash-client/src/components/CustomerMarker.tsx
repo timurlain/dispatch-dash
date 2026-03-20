@@ -24,7 +24,7 @@ function getMarkerIcon(customer: Customer, isSelected: boolean, orderIndex?: num
       width:36px; height:36px; display:flex; align-items:center; justify-content:center;
       color:#e2e8f0; font-family:monospace; font-weight:700; font-size:14px;
       position:relative; cursor:pointer;
-    ">${label}${twIcon || rushIcon ? `<span style="position:absolute;top:-8px;right:-8px;font-size:12px">${twIcon}${rushIcon}</span>` : ''}</div>`,
+    ">${label}${twIcon || rushIcon ? `<span style="position:absolute;top:-10px;right:-10px;font-size:16px">${twIcon}${rushIcon}</span>` : ''}</div>`,
     iconSize: [36, 36],
     iconAnchor: [18, 18],
   });

@@ -9,12 +9,13 @@ interface Props {
   getVehicleDistance: (id: string) => number;
   onSelectVehicle: (id: string) => void;
   onSubmit: () => void;
+  onClear: () => void;
   timerSeconds: number | null;
 }
 
 export default function BottomBar({
   round, activeVehicleId, totalVisited,
-  getVehicleLoad, getVehicleDistance, onSelectVehicle, onSubmit, timerSeconds,
+  getVehicleLoad, getVehicleDistance, onSelectVehicle, onSubmit, onClear, timerSeconds,
 }: Props) {
   const distance = getVehicleDistance(activeVehicleId);
 
@@ -36,12 +37,20 @@ export default function BottomBar({
             {'\u23F1'} {Math.floor(timerSeconds / 60)}:{String(timerSeconds % 60).padStart(2, '0')}
           </span>
         )}
-        <button
-          onClick={onSubmit}
-          className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-6 rounded-lg transition-colors"
-        >
-          ODESLAT
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={onClear}
+            className="bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold py-2 px-4 rounded-lg transition-colors border border-slate-600"
+          >
+            VYMAZAT
+          </button>
+          <button
+            onClick={onSubmit}
+            className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-6 rounded-lg transition-colors"
+          >
+            ODESLAT
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -47,15 +47,15 @@ public class ScoringServiceTests
 
         var result = _sut.Score(routes, round);
 
-        // 7 unvisited customers × 200 = 1400
-        Assert.Equal(1400, result.UnvisitedPenalty);
+        // 19 unvisited customers × 200 = 3800
+        Assert.Equal(3800, result.UnvisitedPenalty);
     }
 
     [Fact]
     public void ScoreRoute_CapacityOverload_Gets50PenaltyPerUnit()
     {
         var round = RoundDefinitions.Round2(); // capacity 20 per vehicle
-        // Put all 30 demand on one truck (overload by 10)
+        // Put all 68 demand on one truck (overload by 48)
         var routes = new List<RouteSubmission>
         {
             new("V1", round.Customers.Select(c => c.Id).ToList())
@@ -63,7 +63,7 @@ public class ScoringServiceTests
 
         var result = _sut.Score(routes, round);
 
-        Assert.Equal(500, result.CapacityPenalty); // 10 units × 50
+        Assert.Equal(2400, result.CapacityPenalty); // 48 units × 50
     }
 
     [Fact]

@@ -28,9 +28,9 @@ public class FeasibilityCheckerTests
     {
         var result = _sut.Analyze(RoundDefinitions.Round3());
         Assert.False(result.IsFeasible);
-        Assert.Equal(11, result.CapacityShortfall);
-        Assert.Equal(34, result.TotalDemand);
-        Assert.Equal(23, result.TotalCapacity);
+        Assert.Equal(37, result.CapacityShortfall);
+        Assert.Equal(107, result.TotalDemand);
+        Assert.Equal(70, result.TotalCapacity);
     }
 
     [Fact]

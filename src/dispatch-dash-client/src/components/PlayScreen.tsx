@@ -19,6 +19,7 @@ export default function PlayScreen({ round, timerSeconds, onSubmit }: Props) {
     getVehicleDistance,
     totalVisited,
     toSubmission,
+    reset,
   } = useGameState(round);
 
   const handleSubmit = () => {
@@ -55,6 +56,7 @@ export default function PlayScreen({ round, timerSeconds, onSubmit }: Props) {
         getVehicleDistance={getVehicleDistance}
         onSelectVehicle={setActiveVehicleId}
         onSubmit={handleSubmit}
+        onClear={reset}
         timerSeconds={timerSeconds}
       />
     </div>

@@ -16,10 +16,37 @@ public static class RoundDefinitions
         new("F", "Kromeriz",         49.2977, 17.3933, 2, TimeWindow.Morning),
         new("G", "Zlin",             49.2268, 17.6669, 5, TimeWindow.Afternoon),
         new("H", "Otrokovice",       49.2094, 17.5315, 4),
+        new("I", "Uh. Hradiste",     49.0698, 17.4597, 3),
+        new("J", "Vizovice",         49.2222, 17.8531, 2, TimeWindow.Morning),
+        new("K", "Luhacovice",       49.1003, 17.7603, 4),
+        new("L", "Napajedla",        49.1714, 17.5131, 3, TimeWindow.Afternoon),
+        new("M", "Hulin",            49.3167, 17.4636, 2),
+        new("N", "Slavicin",         49.0856, 17.8817, 3),
+        new("O", "Kelc",             49.4364, 17.8264, 2),
     ];
 
-    private static readonly Customer RushOrder =
-        new("R", "Frenstat p. R.", 49.5480, 18.2108, 4, IsRushOrder: true);
+    private static readonly List<Customer> ExtraCustomers =
+    [
+        new("P", "Uhersky Brod",     49.0247, 17.6486, 4, TimeWindow.Morning),
+        new("Q", "Bojkovice",        49.0431, 17.8292, 3),
+        new("R", "Brumov-Bylnice",   49.0822, 18.0242, 5, TimeWindow.Afternoon),
+        new("S", "Val. Klobouky",    49.1372, 18.0081, 3),
+        new("T", "Stare Mesto",      49.0750, 17.4350, 4),
+    ];
+
+    private static readonly List<Customer> RushOrders =
+    [
+        new("U",  "Frenstat p. R.",  49.5480, 18.2108, 4, IsRushOrder: true),
+        new("V",  "Novy Jicin",      49.5944, 18.0103, 5, IsRushOrder: true),
+        new("W",  "Koprivnice",      49.5994, 18.1447, 3, IsRushOrder: true),
+        new("X",  "Prerov",          49.4553, 17.4511, 6, IsRushOrder: true),
+        new("Y",  "Prostejov",       49.4722, 17.1117, 4, IsRushOrder: true),
+        new("Z",  "Olomouc",         49.5938, 17.2509, 5, IsRushOrder: true),
+        new("AA", "Sternberk",       49.7306, 17.2989, 3, IsRushOrder: true),
+        new("AB", "Hranice",         49.5478, 17.7347, 4, IsRushOrder: true),
+        new("AC", "Lipnik n. B.",    49.5267, 17.5864, 3, IsRushOrder: true),
+        new("AD", "Zubri",           49.4667, 18.0933, 2, IsRushOrder: true),
+    ];
 
     public static RoundConfig Round1() => new(
         RoundNumber: 1,
@@ -35,7 +62,7 @@ public static class RoundDefinitions
         RoundNumber: 2,
         Title: "Welcome to Reality",
         Description: "4 trucks, limited capacity, time windows. Welcome to real logistics.",
-        Customers: BaseCustomers.ToList(),
+        Customers: BaseCustomers.Concat(ExtraCustomers).ToList(),
         Vehicles: [
             new Vehicle("V1", 20),
             new Vehicle("V2", 20),
@@ -50,12 +77,12 @@ public static class RoundDefinitions
         RoundNumber: 3,
         Title: "A Typical Monday",
         Description: "Rush orders, breakdowns, traffic. Can you serve everyone?",
-        Customers: BaseCustomers.Append(RushOrder).ToList(),
+        Customers: BaseCustomers.Concat(ExtraCustomers).Concat(RushOrders).ToList(),
         Vehicles: [
-            new Vehicle("V1", 8),
-            new Vehicle("V2", 5),
-            new Vehicle("V3", 5),
-            new Vehicle("V4", 5),
+            new Vehicle("V1", 15),
+            new Vehicle("V2", 20),
+            new Vehicle("V3", 20),
+            new Vehicle("V4", 15),
         ],
         Depot: DefaultDepot,
         TimerSeconds: 120,
