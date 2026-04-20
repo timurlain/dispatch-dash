@@ -221,6 +221,7 @@ export default function HostScreen() {
   // --- Between rounds (showing results / leaderboard) ---
   if (isShowingResults) {
     return (
+      <>
       <div className="h-screen flex flex-col bg-slate-900 p-6 overflow-auto">
         {/* Top bar */}
         <div className="flex items-center justify-between mb-6">
@@ -286,6 +287,15 @@ export default function HostScreen() {
           </div>
         </div>
       </div>
+      {modalRound !== null && (
+        <RoundTimerModal
+          roundNumber={modalRound}
+          defaultSeconds={ROUND_DEFAULTS[modalRound] ?? 60}
+          onStart={handleModalStart}
+          onCancel={handleModalCancel}
+        />
+      )}
+      </>
     );
   }
 
