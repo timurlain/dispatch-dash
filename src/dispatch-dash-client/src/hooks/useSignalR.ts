@@ -86,8 +86,8 @@ export function useSignalR() {
     connectionRef.current?.invoke('JoinAsHost', roomCode);
   }, []);
 
-  const startRound = useCallback((roomCode: string) => {
-    connectionRef.current?.invoke('StartRound', roomCode);
+  const startRound = useCallback((roomCode: string, seconds: number) => {
+    connectionRef.current?.invoke('StartRound', roomCode, seconds);
   }, []);
 
   const submitSolution = useCallback(

@@ -41,15 +41,18 @@ public class GameManager
         return player;
     }
 
-    public RoundConfig? StartRound(string roomCode)
+    public RoundConfig? StartRound(string roomCode, int? timerOverride = null)
     {
         if (!_games.TryGetValue(roomCode, out var game)) return null;
         game.CurrentRound++;
         if (game.CurrentRound > 3) return null;
         var round = RoundDefinitions.GetRound(game.CurrentRound);
+        var effectiveSeconds = timerOverride.HasValue
+            ? Math.Clamp(timerOverride.Value, 30, 300)
+            : round.TimerSeconds;
         game.Phase = GamePhase.Playing;
         game.RoundStartedAt = DateTime.UtcNow;
-        game.RoundTimerSeconds = round.TimerSeconds;
+        game.RoundTimerSeconds = effectiveSeconds;
         game.Submissions[game.CurrentRound] = [];
         return round;
     }

@@ -38,12 +38,13 @@ public class GameHub : Hub
         await Groups.AddToGroupAsync(Context.ConnectionId, roomCode);
     }
 
-    public async Task StartRound(string roomCode)
+    public async Task StartRound(string roomCode, int? timerSeconds)
     {
-        var round = _gameManager.StartRound(roomCode);
+        var round = _gameManager.StartRound(roomCode, timerSeconds);
         if (round is null) return;
+        var game = _gameManager.GetGame(roomCode)!;
         await Clients.Group(roomCode).SendAsync("RoundStarting", round, 3);
-        _timerService.StartTimer(roomCode, round.TimerSeconds);
+        _timerService.StartTimer(roomCode, game.RoundTimerSeconds!.Value);
     }
 
     public async Task SubmitSolution(string roomCode, string playerId, List<RouteSubmission> routes)

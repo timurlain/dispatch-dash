@@ -3,6 +3,9 @@ import { QRCodeSVG } from 'qrcode.react';
 import { useSignalR } from '../hooks/useSignalR';
 import Leaderboard from './Leaderboard';
 import InfeasibilityReveal from './InfeasibilityReveal';
+import RoundTimerModal from './RoundTimerModal';
+
+const ROUND_DEFAULTS: Record<number, number> = { 1: 60, 2: 90, 3: 120 };
 
 const WHAT_CHANGED: Record<number, { title: string; bullets: string[] }> = {
   2: {
@@ -42,6 +45,7 @@ export default function HostScreen() {
   const [error, setError] = useState<string | null>(null);
   const [lastCompletedRound, setLastCompletedRound] = useState(0);
   const [showingWhatChanged, setShowingWhatChanged] = useState(false);
+  const [modalRound, setModalRound] = useState<number | null>(null);
 
   // Track when rounds complete (results come in, timer stops)
   useEffect(() => {
@@ -66,11 +70,23 @@ export default function HostScreen() {
       .catch(err => setError(err.message));
   }, [connected, joinAsHost]);
 
-  const handleStartRound = useCallback(() => {
-    if (!roomCode) return;
+  const openStartModal = useCallback((roundNum: number) => {
     setShowingWhatChanged(false);
-    startRound(roomCode);
-  }, [roomCode, startRound]);
+    setModalRound(roundNum);
+  }, []);
+
+  const handleModalStart = useCallback(
+    (seconds: number) => {
+      if (!roomCode) return;
+      startRound(roomCode, seconds);
+      setModalRound(null);
+    },
+    [roomCode, startRound],
+  );
+
+  const handleModalCancel = useCallback(() => {
+    setModalRound(null);
+  }, []);
 
   const handleShowWhatChanged = useCallback((roundNum: number) => {
     if (WHAT_CHANGED[roundNum]) {
@@ -240,7 +256,7 @@ export default function HostScreen() {
                   ))}
                 </ul>
                 <button
-                  onClick={handleStartRound}
+                  onClick={() => openStartModal(nextRound)}
                   className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-8 rounded-xl text-xl transition-colors mt-4"
                 >
                   ZAČÍT KOLO {nextRound}
@@ -256,7 +272,7 @@ export default function HostScreen() {
                 </button>
                 <div className="text-slate-600 text-sm">nebo</div>
                 <button
-                  onClick={handleStartRound}
+                  onClick={() => openStartModal(nextRound)}
                   className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-8 rounded-xl text-xl transition-colors"
                 >
                   ZAČÍT KOLO {nextRound}
@@ -310,7 +326,7 @@ export default function HostScreen() {
 
         {/* Start button */}
         <button
-          onClick={handleStartRound}
+          onClick={() => openStartModal(1)}
           disabled={playerCount === 0}
           className={`font-bold py-4 px-12 rounded-xl text-2xl transition-colors ${
             playerCount > 0
@@ -325,6 +341,15 @@ export default function HostScreen() {
           <p className="text-slate-600 text-sm">Čekáme na hráče...</p>
         )}
       </div>
+
+      {modalRound !== null && (
+        <RoundTimerModal
+          roundNumber={modalRound}
+          defaultSeconds={ROUND_DEFAULTS[modalRound] ?? 60}
+          onStart={handleModalStart}
+          onCancel={handleModalCancel}
+        />
+      )}
     </div>
   );
 }

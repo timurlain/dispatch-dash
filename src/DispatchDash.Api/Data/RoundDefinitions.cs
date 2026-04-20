@@ -55,7 +55,7 @@ public static class RoundDefinitions
         Customers: BaseCustomers.Select(c => c with { TimeWindow = TimeWindow.None, Demand = 0 }).ToList(),
         Vehicles: [new Vehicle("V1", int.MaxValue)],
         Depot: DefaultDepot,
-        TimerSeconds: 30,
+        TimerSeconds: 60,
         TrafficSegments: []);
 
     public static RoundConfig Round2() => new(
@@ -70,7 +70,7 @@ public static class RoundDefinitions
             new Vehicle("V4", 20),
         ],
         Depot: DefaultDepot,
-        TimerSeconds: 60,
+        TimerSeconds: 90,
         TrafficSegments: []);
 
     public static RoundConfig Round3() => new(
@@ -85,7 +85,7 @@ public static class RoundDefinitions
             new Vehicle("V4", 15),
         ],
         Depot: DefaultDepot,
-        TimerSeconds: 90,
+        TimerSeconds: 120,
         TrafficSegments: [new TrafficSegment("G", "H", 2.0)]);
 
     public static RoundConfig GetRound(int number) => number switch
