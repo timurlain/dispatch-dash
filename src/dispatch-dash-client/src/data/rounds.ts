@@ -49,7 +49,8 @@ export const rounds: Record<number, RoundConfig> = {
     customers: baseCustomers.map(c => ({ ...c, timeWindow: 'none' as const, demand: 0 })),
     vehicles: [{ id: 'V1', capacity: Infinity, preloadedUnits: 0 }],
     depot,
-    timerSeconds: 30,
+    timerSeconds: 60,
+    introSeconds: 11,
     trafficSegments: [],
   },
   2: {
@@ -61,7 +62,8 @@ export const rounds: Record<number, RoundConfig> = {
       id: `V${i + 1}`, capacity: 20, preloadedUnits: 0,
     })),
     depot,
-    timerSeconds: 60,
+    timerSeconds: 90,
+    introSeconds: 18,
     trafficSegments: [],
   },
   3: {
@@ -76,7 +78,8 @@ export const rounds: Record<number, RoundConfig> = {
       { id: 'V4', capacity: 15, preloadedUnits: 0 },
     ],
     depot,
-    timerSeconds: 90,
+    timerSeconds: 120,
+    introSeconds: 18,
     trafficSegments: [{ fromId: 'G', toId: 'H', multiplier: 2.0 }],
   },
 };

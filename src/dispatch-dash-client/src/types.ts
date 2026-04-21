@@ -36,6 +36,7 @@ export interface RoundConfig {
   vehicles: Vehicle[];
   depot: Depot;
   timerSeconds: number;
+  introSeconds: number;
   trafficSegments: TrafficSegment[];
 }
 

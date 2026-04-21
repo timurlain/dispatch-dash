@@ -10,4 +10,5 @@ public record RoundConfig(
     List<Vehicle> Vehicles,
     Depot Depot,
     int TimerSeconds,
+    int IntroSeconds,
     List<TrafficSegment> TrafficSegments);

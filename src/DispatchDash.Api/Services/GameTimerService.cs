@@ -15,16 +15,23 @@ public class GameTimerService
         _gameManager = gameManager;
     }
 
-    public void StartTimer(string roomCode, int totalSeconds)
+    public void StartTimer(string roomCode, int totalSeconds, int introSeconds = 3)
     {
-        _ = Task.Run(() => RunTimer(roomCode, totalSeconds));
+        _ = Task.Run(() => RunTimer(roomCode, totalSeconds, introSeconds));
     }
 
-    private async Task RunTimer(string roomCode, int totalSeconds)
+    private async Task RunTimer(string roomCode, int totalSeconds, int introSeconds)
     {
         try
         {
-            await Task.Delay(3000); // countdown delay
+            // Intro phase — broadcast a tick each second so clients can show a synchronized countdown.
+            for (int remaining = introSeconds; remaining > 0; remaining--)
+            {
+                var game = _gameManager.GetGame(roomCode);
+                if (game?.Phase != GamePhase.Playing) return;
+                await _hubContext.Clients.Group(roomCode).SendAsync("IntroTick", remaining);
+                await Task.Delay(1000);
+            }
 
             for (int remaining = totalSeconds; remaining >= 0; remaining--)
             {

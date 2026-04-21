@@ -56,6 +56,7 @@ public static class RoundDefinitions
         Vehicles: [new Vehicle("V1", int.MaxValue)],
         Depot: DefaultDepot,
         TimerSeconds: 60,
+        IntroSeconds: 11,
         TrafficSegments: []);
 
     public static RoundConfig Round2() => new(
@@ -71,6 +72,7 @@ public static class RoundDefinitions
         ],
         Depot: DefaultDepot,
         TimerSeconds: 90,
+        IntroSeconds: 18,
         TrafficSegments: []);
 
     public static RoundConfig Round3() => new(
@@ -86,6 +88,7 @@ public static class RoundDefinitions
         ],
         Depot: DefaultDepot,
         TimerSeconds: 120,
+        IntroSeconds: 18,
         TrafficSegments: [new TrafficSegment("G", "H", 2.0)]);
 
     public static RoundConfig GetRound(int number) => number switch

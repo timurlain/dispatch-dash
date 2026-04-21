@@ -6,9 +6,10 @@ interface Props {
   onComplete: () => void;
 }
 
-const INTRO_MS: Record<number, number> = { 1: 8000, 2: 15000, 3: 15000 };
+const DEFAULT_INTRO_SECONDS: Record<number, number> = { 1: 11, 2: 18, 3: 18 };
 const COUNT_STEPS = ['3', '2', '1', 'JEDEM!'];
 const COUNT_STEP_MS = 750;
+const COUNT_PHASE_SECONDS = 3; // 3-2-1 portion; the "JEDEM!" overlaps with round start
 
 const roundIntros: Record<number, { emoji: string; objectives: string[]; tips: string[] }> = {
   1: {
@@ -52,22 +53,29 @@ const roundIntros: Record<number, { emoji: string; objectives: string[]; tips: s
 };
 
 export default function Countdown({ round, onComplete }: Props) {
+  const roundNumber = round?.roundNumber ?? 1;
+  const totalIntroSeconds = Math.max(
+    COUNT_PHASE_SECONDS + 1,
+    round?.introSeconds ?? DEFAULT_INTRO_SECONDS[roundNumber] ?? 11,
+  );
+  const objectivesSeconds = totalIntroSeconds - COUNT_PHASE_SECONDS;
+
   const [phase, setPhase] = useState<'intro' | 'count'>('intro');
   const [countStep, setCountStep] = useState(0);
-
-  const roundNumber = round?.roundNumber ?? 1;
+  const [remainingSec, setRemainingSec] = useState(totalIntroSeconds);
   const intro = roundIntros[roundNumber] ?? roundIntros[1];
 
-  // Intro phase → count phase
+  // Live tick during objectives phase → transitions to count phase when 3s remain
   useEffect(() => {
-    if (phase === 'intro') {
-      const timer = setTimeout(() => {
-        setPhase('count');
-        setCountStep(0);
-      }, INTRO_MS[roundNumber] ?? 8000);
-      return () => clearTimeout(timer);
+    if (phase !== 'intro') return;
+    if (remainingSec <= COUNT_PHASE_SECONDS) {
+      setPhase('count');
+      setCountStep(0);
+      return;
     }
-  }, [phase]);
+    const t = setTimeout(() => setRemainingSec(r => r - 1), 1000);
+    return () => clearTimeout(t);
+  }, [phase, remainingSec]);
 
   // Count steps
   useEffect(() => {
@@ -114,7 +122,13 @@ export default function Countdown({ round, onComplete }: Props) {
           </div>
         )}
 
-        <p className="text-slate-600 text-xs animate-pulse">Hra začíná za chvíli...</p>
+        <p className="text-slate-400 text-base">
+          Kolo začíná za{' '}
+          <span className="text-orange-500 font-bold text-xl tabular-nums">{remainingSec}</span> s
+        </p>
+        <div className="text-slate-600 text-xs">
+          Celkem {objectivesSeconds}s na přečtení, pak odstartujeme
+        </div>
       </div>
     );
   }

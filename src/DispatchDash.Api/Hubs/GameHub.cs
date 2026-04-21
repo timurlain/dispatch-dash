@@ -43,8 +43,8 @@ public class GameHub : Hub
         var round = _gameManager.StartRound(roomCode, timerSeconds);
         if (round is null) return;
         var game = _gameManager.GetGame(roomCode)!;
-        await Clients.Group(roomCode).SendAsync("RoundStarting", round, 3);
-        _timerService.StartTimer(roomCode, game.RoundTimerSeconds!.Value);
+        await Clients.Group(roomCode).SendAsync("RoundStarting", round, round.IntroSeconds);
+        _timerService.StartTimer(roomCode, game.RoundTimerSeconds!.Value, round.IntroSeconds);
     }
 
     public async Task SubmitSolution(string roomCode, string playerId, List<RouteSubmission> routes)
