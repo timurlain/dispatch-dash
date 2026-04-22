@@ -25,7 +25,7 @@ public class FeasibilityChecker
         var isFeasible = shortfall == 0;
 
         double theoreticalMinPenalty = 0;
-        var explanation = "All customers can be served within capacity constraints.";
+        var explanation = "Všichni zákazníci mohou být obslouženi v rámci kapacity.";
 
         if (!isFeasible)
         {
@@ -40,10 +40,13 @@ public class FeasibilityChecker
             }
             theoreticalMinPenalty = skippedCount * UnvisitedPenalty;
 
-            explanation = $"Total demand: {totalDemand} units. " +
-                          $"Total capacity: {totalCapacity} units. " +
-                          $"Shortfall: {shortfall} units. " +
-                          $"Must skip at least {skippedCount} customer(s).";
+            var custWord = skippedCount == 1 ? "zákazníka"
+                : (skippedCount >= 2 && skippedCount <= 4 ? "zákazníky" : "zákazníků");
+
+            explanation = $"Celková poptávka: {totalDemand} jednotek. " +
+                          $"Celková kapacita: {totalCapacity} jednotek. " +
+                          $"Deficit: {shortfall} jednotek. " +
+                          $"Musíš vynechat alespoň {skippedCount} {custWord}.";
         }
 
         return new FeasibilityResult(isFeasible, totalDemand, totalCapacity, shortfall,
