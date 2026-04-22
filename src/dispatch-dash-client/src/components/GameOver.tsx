@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import confetti from 'canvas-confetti';
 import type { LeaderboardEntry, FeasibilityResult, ScoreResult } from '../types';
+import InfeasibilityReveal from './InfeasibilityReveal';
 
 interface Props {
   leaderboard: LeaderboardEntry[];
@@ -107,23 +108,16 @@ export default function GameOver({ leaderboard, playerName, feasibility, roundSc
         </div>
       )}
 
-      {/* Feasibility reveal */}
-      {feasibility && (
+      {/* Feasibility reveal — show full card to player when infeasible */}
+      {feasibility && !feasibility.isFeasible && (
+        <div className="w-full max-w-md">
+          <InfeasibilityReveal feasibility={feasibility} />
+        </div>
+      )}
+      {feasibility && feasibility.isFeasible && (
         <div className="bg-slate-800 rounded-xl p-5 w-full max-w-md border border-slate-700">
-          <h3 className="text-orange-500 font-bold mb-2">
-            {feasibility.isFeasible ? 'Toto kolo bylo řešitelné!' : 'Počkat... bylo to vůbec řešitelné?'}
-          </h3>
+          <h3 className="text-orange-500 font-bold mb-2">Toto kolo bylo řešitelné!</h3>
           <p className="text-slate-400 text-sm leading-relaxed">{feasibility.explanation}</p>
-          {!feasibility.isFeasible && (
-            <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
-              <div className="text-slate-500">Celková poptávka</div>
-              <div className="text-slate-300">{feasibility.totalDemand} jednotek</div>
-              <div className="text-slate-500">Celková kapacita</div>
-              <div className="text-slate-300">{feasibility.totalCapacity} jednotek</div>
-              <div className="text-slate-500">Deficit</div>
-              <div className="text-red-400">{feasibility.capacityShortfall} jednotek</div>
-            </div>
-          )}
         </div>
       )}
 

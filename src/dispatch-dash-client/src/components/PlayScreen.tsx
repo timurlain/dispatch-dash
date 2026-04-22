@@ -70,15 +70,21 @@ export default function PlayScreen({ round, timerSeconds, onSubmit }: Props) {
 
   return (
     <div className="h-screen flex flex-col">
-      <div className="bg-slate-800 border-b border-slate-700 px-4 py-2 flex items-center justify-between">
-        <div>
+      <div className="bg-slate-800 border-b border-slate-700 px-4 py-2 flex items-center justify-between gap-3">
+        <div className="min-w-0 flex-1">
           <span className="text-orange-500 font-bold text-sm">Kolo {round.roundNumber}</span>
           <span className="text-slate-500 mx-2">|</span>
-          <span className="text-slate-300 text-sm">{round.title}</span>
+          <span className="text-slate-300 text-sm truncate">{round.title}</span>
         </div>
-        <p className="text-slate-500 text-xs hidden sm:block max-w-xs truncate">
-          {round.description}
-        </p>
+        {localTimer !== null && (
+          <span
+            className={`font-bold font-mono tabular-nums text-2xl md:text-3xl ${
+              localTimer <= 15 ? 'text-red-400 animate-pulse' : 'text-slate-100'
+            }`}
+          >
+            {Math.floor(localTimer / 60)}:{String(localTimer % 60).padStart(2, '0')}
+          </span>
+        )}
       </div>
       <div className="flex-1 relative">
         <GameMap
