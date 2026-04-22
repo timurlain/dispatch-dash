@@ -54,7 +54,7 @@ public class GameManager
         game.RoundStartedAt = DateTime.UtcNow;
         game.RoundTimerSeconds = effectiveSeconds;
         game.Submissions[game.CurrentRound] = [];
-        return round;
+        return round with { TimerSeconds = effectiveSeconds };
     }
 
     public RoundConfig? GetCurrentRound(string roomCode)
